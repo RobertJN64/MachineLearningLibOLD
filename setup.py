@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='MachineLearning',
-    url='https://github.com/jladan/package_demo',
+    url='https://github.com/RobertJN64/MachineLearning',
     author='Robert Nies',
     author_email='robertjnie@gamil.com',
     # Needed to actually package something
