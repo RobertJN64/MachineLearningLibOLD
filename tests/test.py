@@ -20,7 +20,7 @@ def test(fname = "venv/tests/files/titanic.json"):
 
     dataset, trainset, testset, metadata = ge.loadDataset(fname, testSize)
 
-    NetDB = gn.Random(metadata.inputs, metadata.outputs, 20, 2, 5) #creates the neural nets
+    NetDB = gn.Random(metadata.inputs, metadata.outputs, populationSize, midWidth, midDepth) #creates the neural nets
 
     bestNet = [None, 0]
 
