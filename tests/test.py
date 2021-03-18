@@ -3,6 +3,7 @@ from MachineLearning import GeneticEvolution as ge
 from MachineLearning import NetRender as nr
 
 def test(fname = "venv/tests/files/titanic.json"):
+    print("Running test script")
     #config
     generations = 10
     populationSize = 10
