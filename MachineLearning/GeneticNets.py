@@ -216,7 +216,8 @@ class net:  # the network itself, contains many nodes
         return scale(self.expectedOutputs[name]["min"], val, self.expectedOutputs[name]["max"])
 
     def process(self):  # eval
-        self.bias.activate()
+        if self.usebias:
+            self.bias.activate()
 
         for self.inName in self.inputs:  # activate net
             self.inputNode = self.inputs[self.inName]
