@@ -4,7 +4,7 @@ setup(
     name='MachineLearning',
     url='https://github.com/RobertJN64/MachineLearning',
     author='Robert Nies',
-    author_email='robertjnie@gamil.com',
+    author_email='robertjnies@gamil.com',
     # Needed to actually package something
     packages=['MachineLearning'],
     # Needed for dependencies
@@ -15,5 +15,6 @@ setup(
     license='MIT',
     description='Machine learning libraries that focus on transparency over speed. Most rely on genetic algs.',
     long_description=open('README.txt').read(),
-    scripts = ['scripts/test.py', 'scripts/files/titanic.json']
+    data_files=[('tests', ['tests/test.py']),
+                ('tests/files', ['tests/files/titanic.json'])],
 )
