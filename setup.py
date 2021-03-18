@@ -15,4 +15,5 @@ setup(
     license='MIT',
     description='Machine learning libraries that focus on transparency over speed. Most rely on genetic algs.',
     long_description=open('README.txt').read(),
+    scripts = ['scripts/test.py', 'scripts/files/titanic.json']
 )
