@@ -3,7 +3,7 @@ from MachineLearning import GeneticEvolution as ge
 from MachineLearning import NetRender as nr
 
 #config
-fname = "scripts/files/titanic.json"
+fname = "tests/files/titanic.json"
 generations = 10
 populationSize = 10
 trainSize = 400
