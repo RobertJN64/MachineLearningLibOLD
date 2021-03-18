@@ -313,7 +313,10 @@ class net:  # the network itself, contains many nodes
                      "expectedInputs": self.expectedInputs,
                      "expectedOutputs": self.expectedOutputs,
                      "act_func": self.activation_func,
-                     "fin_act_func": self.final_activation_func}
+                     "fin_act_func": self.final_activation_func,
+                     "use-bias": self.usebias,
+                     "use-neat": self.neat,
+                     }
 
         self.nodeid = 0
         self.nodeindex = {}
@@ -416,6 +419,8 @@ def loadNetJSON(data):
     newnet = net({}, {}, 0, 0)
     newnet.activation_func = data["act_func"]
     newnet.final_activation_func = data["fin_act_func"]
+    newnet.bias = data["use-bias"]
+    newnet.neat = data["use-neat"]
     for nodedata in data["nodes"]:
         if nodedata["layer"] == "input":
             newnode = inNode()
