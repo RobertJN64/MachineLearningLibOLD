@@ -21,7 +21,7 @@ def test(fname = "venv/tests/files/titanic.json"):
 
     dataset, trainset, testset, metadata = ge.loadDataset(fname, testSize)
 
-    NetDB = gn.Random(metadata.inputs, metadata.outputs, populationSize, midWidth, midDepth) #creates the neural nets
+    NetDB = gn.Random(metadata.inputs, metadata.outputs, populationSize, midWidth, midDepth, activation_func="sigmoid", final_activation_func="sigmoid") #creates the neural nets
 
     bestNet = [None, 0]
 
@@ -42,4 +42,4 @@ def test(fname = "venv/tests/files/titanic.json"):
     print("Execution time: ", time.time() - startTime)
 
 if __name__ == "__main__":
-    test('files/titanic.json')
+    test('tests/files/titanic.json')
