@@ -40,3 +40,6 @@ def test(fname = "venv/tests/files/titanic.json"):
     nr.stop()
 
     print("Execution time: ", time.time() - startTime)
+
+if __name__ == "__main__":
+    test('files/titanic.json')

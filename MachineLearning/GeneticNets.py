@@ -47,7 +47,7 @@ class node:  # the core of the nueral net, a node must have a value
 
     def calc(self):
         if self.acivation_func == "sigmoid":
-            self.val = ((1 / (1 + math.pow(math.e, (-1 * self.total)))) + 1) / 2
+            self.val = ((1 / (1 + math.pow(math.e, (-1 * self.total))))  * 2) -1
         elif self.acivation_func == "relu":
             self.val = max(0, self.total)
         elif self.acivation_func == "old":
