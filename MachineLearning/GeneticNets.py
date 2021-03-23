@@ -20,7 +20,7 @@ def outSet(strings, activation_func="sigmoid"):
     return outputs
 
 
-def scale(minv, v, maxv, minx=0, maxx=1):
+def scale(minv, v, maxv, minx=-1, maxx=1):
     # scale to 0 to 1
     return ((v - minv) / (maxv - minv)) * (maxx - minx) - maxx
 
@@ -47,7 +47,7 @@ class node:  # the core of the nueral net, a node must have a value
 
     def calc(self):
         if self.acivation_func == "sigmoid":
-            self.val = 1 / (1 + math.pow(math.e, (-1 * self.total)))
+            self.val = ((1 / (1 + math.pow(math.e, (-1 * self.total)))) + 1) / 2
         elif self.acivation_func == "relu":
             self.val = max(0, self.total)
         elif self.acivation_func == "old":
@@ -196,19 +196,14 @@ class net:  # the network itself, contains many nodes
     def receiveInput(self, inputs):
         for self.name in inputs:
             # print(scale(self.expectedInputs[self.name]["min"], inputs[self.name], self.expectedInputs[self.name]["max"]))
-            if self.activation_func != "sigmoid":
-                self.setNode(self.name, scale(self.expectedInputs[self.name]["min"], inputs[self.name],
-                                              self.expectedInputs[self.name]["max"], minx=-1, maxx=1))
-            else:
-                self.setNode(self.name, scale(self.expectedInputs[self.name]["min"], inputs[self.name],
-                                              self.expectedInputs[self.name]["max"]))
+
+            self.setNode(self.name, scale(self.expectedInputs[self.name]["min"], inputs[self.name],
+                                          self.expectedInputs[self.name]["max"], minx=-1, maxx=1))
+
 
     def getOutput(self):
         self.out = {}
         for self.name in self.expectedOutputs:
-            if self.final_activation_func == "sigmoid":
-                self.out[self.name] = self.getNode(self.name) * 2 - 1
-            else:
                 self.out[self.name] = self.getNode(self.name)
         return self.out
 
@@ -383,7 +378,7 @@ def customRand(cVal, evoRate):
     return newVal
 
 
-def Random(inputs, outputs, length, width, depth, bias=True, activation_func="relu", final_activation_func="sigmoid", neat=False):
+def Random(inputs, outputs, length, width, depth, bias=True, activation_func="relu", final_activation_func="relu", neat=False):
     print("Creating a set of " + str(length) + " random nets")
     netDB = []
     for i in range(0, length):
