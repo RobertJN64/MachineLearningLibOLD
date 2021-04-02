@@ -22,7 +22,7 @@ def outSet(strings, activation_func="sigmoid"):
 
 def scale(minv, v, maxv, minx=-1, maxx=1):
     # scale to 0 to 1
-    return ((v - minv) / (maxv - minv)) * (maxx - minx) - maxx
+    return ((v - minv) / (maxv - minv)) * (maxx - minx) + minx
 
 
 def descale(minv, v, maxv):
