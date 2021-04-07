@@ -115,7 +115,7 @@ class midNode(node):  # pretty much the same as an input node
 
 class net:  # the network itself, contains many nodes
     def __init__(self, inputsRaw, outputsRaw, width, depth, bias=True, activation_func="sigmoid",
-                 final_activation_func="sigmoid", neat=False, datafile = None):
+                 final_activation_func="sigmoid", neat=False, datafile = None, classifier_output=None):
         self.activation_func = activation_func
         self.final_activation_func = final_activation_func
         self.datafile = datafile
@@ -130,6 +130,11 @@ class net:  # the network itself, contains many nodes
 
         self.usebias = bias
         self.neat = neat
+
+        if classifier_output is None and len(self.outputs) == 1:
+            self.classifier_output = list(self.outputs.keys())[0]
+        else:
+            self.classifier_output = classifier_output
 
         self.midnodes = []
 
@@ -314,6 +319,7 @@ class net:  # the network itself, contains many nodes
                      "use-bias": self.usebias,
                      "use-neat": self.neat,
                      "data-file": self.datafile,
+                     "classifier-output": self.classifier_output
                      }
 
         self.nodeid = 0
@@ -420,6 +426,7 @@ def loadNetJSON(data):
     newnet.bias = data["use-bias"]
     newnet.neat = data["use-neat"]
     newnet.datafile = data["data-file"]
+    newnet.classifier_output = data["classifier-output"]
     for nodedata in data["nodes"]:
         if nodedata["layer"] == "input":
             newnode = inNode()
