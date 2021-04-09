@@ -68,10 +68,15 @@ def colorize(points, colormode, percents, zmax, zmin, classification=None, net=N
                                0.5 - m.scale(0, point.z, 100, 0, 0.5),
                                m.scale(0, point.z, 100, 0, 1))
             else:
-                if point.z > m.unitscale(zmax, 0, zmin):
-                    point.color = "blue"
+                if percents:
+                    point.color = (1 - m.scale(0, point.z, 100, 0, 1),
+                                   0.5 - m.scale(0, point.z, 100, 0, 0.5),
+                                   m.scale(0, point.z, 100, 0, 1))
                 else:
-                    point.color = "orange"
+                    if m.unitscale(zmin, point.z, zmax) > 0:
+                        point.color = "blue"
+                    else:
+                        point.color = "orange"
         elif colormode == "score":
             netscore = classification.getclose(point.x, point.y)
             cutoff = (zmax - zmin)*0.5 + zmin
