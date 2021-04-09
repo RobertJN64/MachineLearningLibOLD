@@ -1,4 +1,3 @@
-print("GeneticNets active...")
 # import copy
 import random
 # from time import sleep
@@ -201,8 +200,6 @@ class net:  # the network itself, contains many nodes
 
     def receiveInput(self, inputs):
         for self.name in inputs:
-            # print(scale(self.expectedInputs[self.name]["min"], inputs[self.name], self.expectedInputs[self.name]["max"]))
-
             self.setNode(self.name, scale(self.expectedInputs[self.name]["min"], inputs[self.name],
                                           self.expectedInputs[self.name]["max"], minx=-1, maxx=1))
 
@@ -486,10 +483,4 @@ def loadNets(fname):
     netDB = []
     for Net in data["nets"]:
         netDB.append([loadNetJSON(Net), 0])
-
-    # except Exception as e:
-    # print("Error loading file: ")
-    # print(e)
-    # return {}
-
     return netDB

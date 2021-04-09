@@ -1,4 +1,3 @@
-print("Net render active...")
 import pygame
 from time import sleep
 
@@ -113,7 +112,6 @@ class screen:
             outNodeType = type(net.outputs[name])
 
             for startNode, startLoc in nodeCords.items():
-                # print(str(type(startNode)))
                 if type(startNode) != outNodeType:
                     for endNode, value in startNode.connections.items():
                         endLoc = nodeCords[endNode]

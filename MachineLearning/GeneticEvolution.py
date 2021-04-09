@@ -191,7 +191,6 @@ def getEvo(count):
     count += 1
     evoTable = []
     while count > 0:
-        # print(count)
         val = round(count / 2)
         count -= val
         evoTable.append(val)
@@ -203,11 +202,12 @@ def getEvo(count):
 # evolves a database using specified rate
 # user can specify a custom evoTable (error if wrong length)
 # throws error if DB is not evolvable
-def evolve(DB, evoRate, evoTable=None, settings=None):
+def evolve(DB, evoRate, evoTable=None, settings=None, doprint=True):
     if settings is None:
         settings = {}
 
-    print("New Generation.", "Evo rate: ", round(evoRate,3))
+    if doprint:
+        print("New Generation.", "Evo rate: ", round(evoRate,3))
     # check if DB is evovable
     sample = DB[0][0]
     evolveAttr = getattr(sample, 'evolve')
