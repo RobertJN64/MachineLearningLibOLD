@@ -101,7 +101,7 @@ def colorize(points, colormode, percents, zmax, zmin, classification=None, net=N
             warnings.warn("Color mode not found: " + str(colormode))
 
 #region GraphingFuncs
-def GraphNet(net, xaxis, yaxis, fig):
+def GraphNet(net, xaxis, yaxis, fig, title=None):
     zaxis = ' & '.join(net.outputs)
     xs = []
     ys = []
@@ -136,10 +136,12 @@ def GraphNet(net, xaxis, yaxis, fig):
         xs.append(xvals)
         ys.append(yvals)
         zs.append(zvals)
-    graph.multiGraph3D(xs, ys, zs, outcolors, xaxis, yaxis, zaxis, xaxis + " by " + yaxis, plt=fig)
+    if title is None:
+        title = xaxis + " by " + yaxis
+    graph.multiGraph3D(xs, ys, zs, outcolors, xaxis, yaxis, zaxis, title, plt=fig)
 
 
-def GraphNetData(net, data, xaxis, yaxis, zaxis, defvalue, useclump, usepercents, colormode, fig):
+def GraphNetData(net, data, xaxis, yaxis, zaxis, defvalue, useclump, usepercents, colormode, fig, title=None):
     #region handle net
     netxvals = []
     netyvals = []
@@ -206,5 +208,7 @@ def GraphNetData(net, data, xaxis, yaxis, zaxis, defvalue, useclump, usepercents
         zaxis += "%"
 
     #endregion
-    graph.Graph3D(netxvals,netyvals,netzvals,"red", xaxis, yaxis, zaxis, xaxis + " by " + yaxis, plt=fig)
-    graph.Graph3D(dataxvals, datayvals, datazvals, datacolorvals, xaxis, yaxis, zaxis, xaxis + " by " + yaxis, plt=fig, s=size)
+    if title is None:
+        title = xaxis + " by " + yaxis
+    graph.Graph3D(netxvals,netyvals,netzvals,"red", xaxis, yaxis, zaxis, title, plt=fig)
+    graph.Graph3D(dataxvals, datayvals, datazvals, datacolorvals, xaxis, yaxis, zaxis, title, plt=fig, s=size)
