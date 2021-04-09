@@ -2,10 +2,6 @@ import copy
 import random
 import json
 
-# from multiprocessing import Process, Queue, Manager
-
-print("Genetic evolver running...")
-
 # hardwired config
 validTestModes = ["Absolute",
                   "Closeness",
