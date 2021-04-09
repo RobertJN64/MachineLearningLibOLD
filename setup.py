@@ -10,7 +10,7 @@ setup(
     # Needed for dependencies
     install_requires=['pygame'],
     # *strongly* suggested for sharing
-    version='2.3.3',
+    version='2.3.4',
     # The license can be anything you like
     license='MIT',
     description='Machine learning libraries that focus on transparency over speed. Most rely on genetic algs. Install PythonExtended + matplotlib for graping',

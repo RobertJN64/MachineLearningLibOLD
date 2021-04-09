@@ -140,6 +140,45 @@ def GraphNet(net, xaxis, yaxis, fig, title=None):
         title = xaxis + " by " + yaxis
     graph.multiGraph3D(xs, ys, zs, outcolors, xaxis, yaxis, zaxis, title, plt=fig)
 
+def GraphNetOutputs(net, xaxis, yaxis, outputs, fig, title=None):
+    zaxis = ' & '.join(net.outputs)
+    xs = []
+    ys = []
+    zs = []
+    outcolors = []
+    count = 0
+    for name in outputs:
+        xvals = []
+        yvals = []
+        zvals = []
+        outcolors.append(colors[count][1])
+        count += 1
+        x = -1
+        while x <= 1:
+            y = -1
+            while y <= 1:
+                xvals.append(x)
+                yvals.append(y)
+
+                net.reset()
+                for inName in net.inputs:
+                    if inName == xaxis:
+                        net.setNode(inName, x)
+                    elif inName == yaxis:
+                        net.setNode(inName, y)
+                    else:
+                        net.setNode(inName, 0)
+                net.process()
+                zvals.append(net.getNode(name))
+                y += 0.1
+            x += 0.1
+        xs.append(xvals)
+        ys.append(yvals)
+        zs.append(zvals)
+    if title is None:
+        title = xaxis + " by " + yaxis
+    graph.multiGraph3D(xs, ys, zs, outcolors, xaxis, yaxis, zaxis, title, plt=fig)
+
 
 def GraphNetData(net, data, xaxis, yaxis, zaxis, defvalue, useclump, usepercents, colormode, fig, title=None):
     #region handle net
