@@ -1,7 +1,7 @@
 import PythonExtended.Graphing as graph
 import PythonExtended.Math as m
 import warnings
-import GeneticEvolution as ge
+import MachineLearning.GeneticEvolution as ge
 
 class netclassification:
     def __init__(self, x, y, z, xdif, ydif, zdif):
