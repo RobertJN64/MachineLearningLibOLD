@@ -60,6 +60,8 @@ def colorize(points, colormode, percents, zmax, zmin, classification=None, net=N
     for point in points:
         if percents:
             point.z = (point.posicount / point.count) * 100
+            zmin = 0
+            zmax = 100
         if colormode == "none":
             point.color = "blue"
         elif colormode == "data-file":
