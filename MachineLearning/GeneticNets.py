@@ -420,7 +420,7 @@ def loadNetJSON(data):
     newnet = net({}, {}, 0, 0)
     newnet.activation_func = data["act_func"]
     newnet.final_activation_func = data["fin_act_func"]
-    newnet.bias = data["use-bias"]
+    newnet.usebias = data["use-bias"]
     newnet.neat = data["use-neat"]
     newnet.datafile = data["data-file"]
     newnet.classifier_output = data["classifier-output"]

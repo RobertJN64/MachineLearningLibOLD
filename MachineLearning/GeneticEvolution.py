@@ -13,7 +13,7 @@ validTestModes = ["Absolute",
 # scans a database and returns the (first) item with the highest value
 # format [[item, val], [item, val], [item,val]]
 def getHighest(DB):
-    high = 0
+    high = DB[0][1] - 1
     best = None
     brow = None
     for row in DB:
@@ -23,7 +23,7 @@ def getHighest(DB):
             brow = row
 
     if best is None:
-        print("ERROR: all items had value 0")
+        print("ERROR: nomax")
     return best, brow
 
 
