@@ -1,8 +1,7 @@
-# import copy
 import random
-# from time import sleep
 import json
 import math
+import warnings
 
 
 def inSet(strings):
@@ -52,8 +51,7 @@ class node:  # the core of the nueral net, a node must have a value
         elif self.acivation_func == "old":
             self.val = self.total / self.count
         else:
-            print("Unknown activation func: ", self.acivation_func)
-
+            warnings.warn("Unknown activation func: " + str(self.acivation_func))
 
 class inNode(node):  # an input
     def __init__(self):
@@ -67,8 +65,7 @@ class inNode(node):  # an input
         try:
             self.connections.pop(dnode)
         except Exception as e:
-            print(str(node) + " not found")
-            print("Error: ", str(e))
+            warnings.warn(str(node) + " not found. Exception: " + str(e))
 
     def activate(self):
         for self.nextNode in self.connections:
@@ -99,8 +96,7 @@ class midNode(node):  # pretty much the same as an input node
         try:
             self.connections.pop(dnode)
         except Exception as e:
-            print(str(node) + " not found")
-            print("Error:", str(e))
+            warnings.warn(str(node) + " not found. Exception: " + str(e))
 
     def activate(self):
         for self.nextNode in self.connections:
@@ -355,8 +351,9 @@ class net:  # the network itself, contains many nodes
 
         return self.json
 
-    def save(self, fname, name, ver):
-        print("Saving net: " + name + " with version: " + str(ver) + " to file: " + fname)
+    def save(self, fname, name, ver, log=True):
+        if log:
+            print("Saving net: " + name + " with version: " + str(ver) + " to file: " + fname)
         self.data = self.getJSON(name, str(ver))
 
         with open((fname + '.json'), 'w') as fp:
@@ -383,8 +380,9 @@ def customRand(cVal, evoRate):
     return newVal
 
 
-def Random(inputs, outputs, length, width, depth, bias=True, activation_func="relu", final_activation_func="relu", neat=False):
-    print("Creating a set of " + str(length) + " random nets")
+def Random(inputs, outputs, length, width, depth, bias=True, activation_func="relu", final_activation_func="relu", neat=False, log=True):
+    if log:
+        print("Creating a set of " + str(length) + " random nets")
     netDB = []
     for i in range(0, length):
         newNet = net(inputs, outputs, width, depth, bias=bias, activation_func=activation_func,
@@ -395,16 +393,16 @@ def Random(inputs, outputs, length, width, depth, bias=True, activation_func="re
     return netDB
 
 
-def loadNet(fname):
+def loadNet(fname, log=True):
     try:
         with open((fname + '.json'), 'r') as fp:
             data = json.load(fp)
-        print("Found file with name: " + data["net_name"] + " and ver: " + data["net_ver"])
+        if log:
+            print("Found file with name: " + data["net_name"] + " and ver: " + data["net_ver"])
         return loadNetJSON(data)
 
     except Exception as e:
-        print("Error loading file: ")
-        print(e)
+        warnings.warn("Error loading file: " + str(e))
         return net({}, {}, 0, 0)
 
 
@@ -460,8 +458,9 @@ def loadNetJSON(data):
     return newnet
 
 
-def saveNets(netDB, fname, name, ver):
-    print("Saving nets: " + name + " with version: " + str(ver) + " to file: " + fname)
+def saveNets(netDB, fname, name, ver, log=True):
+    if log:
+        print("Saving nets: " + name + " with version: " + str(ver) + " to file: " + fname)
     i = 0
     data = {"name": name,
             "ver": str(ver),
@@ -474,11 +473,12 @@ def saveNets(netDB, fname, name, ver):
         json.dump(data, fp, sort_keys=True, indent=4)
 
 
-def loadNets(fname):
-    # try:
+def loadNets(fname, log=False):
     with open((fname + '.json'), 'r') as fp:
         data = json.load(fp)
-    print("Found file with name: " + data["name"] + " and ver: " + data["ver"])
+
+    if log:
+        print("Found file with name: " + data["name"] + " and ver: " + data["ver"])
 
     netDB = []
     for Net in data["nets"]:
