@@ -15,7 +15,7 @@ setup(
     # The license can be anything you like
     license='MIT',
     description='Machine learning libraries that focus on transparency over speed. Most rely on genetic algs. Install PythonExtended + matplotlib for graping',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     data_files=[('tests', ['tests/test.py']),
                 ('tests/files', ['tests/files/titanic.json'])],
 )

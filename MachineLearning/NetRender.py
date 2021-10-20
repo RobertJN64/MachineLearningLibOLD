@@ -1,4 +1,7 @@
-import pygame
+try:
+    import pygame
+except ImportError:
+    raise Exception("Pygame is required to use net renderer.")
 from time import sleep
 
 

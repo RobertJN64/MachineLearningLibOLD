@@ -7,14 +7,14 @@ import warnings
 def inSet(strings):
     inputs = {}
     for i in strings:
-        inputs[i] = inNode()
+        inputs[i] = InNode()
     return inputs
 
 
 def outSet(strings, activation_func="sigmoid"):
     outputs = {}
     for i in strings:
-        outputs[i] = outNode(activation_func=activation_func)
+        outputs[i] = OutNode(activation_func=activation_func)
     return outputs
 
 
@@ -28,7 +28,7 @@ def descale(minv, v, maxv):
     return v * (maxv - minv) + minv
 
 
-class node:  # the core of the nueral net, a node must have a value
+class Node:  # the core of the nueral net, a node must have a value
     def __init__(self):
         self.val = 0  # default the node value to 0
         self.total = 0
@@ -53,7 +53,7 @@ class node:  # the core of the nueral net, a node must have a value
         else:
             warnings.warn("Unknown activation func: " + str(self.acivation_func))
 
-class inNode(node):  # an input
+class InNode(Node):  # an input
     def __init__(self):
         super().__init__()
         self.connections = {}  # default to no connections
@@ -65,25 +65,24 @@ class inNode(node):  # an input
         try:
             self.connections.pop(dnode)
         except Exception as e:
-            warnings.warn(str(node) + " not found. Exception: " + str(e))
+            warnings.warn(str(Node) + " not found. Exception: " + str(e))
 
     def activate(self):
-        for self.nextNode in self.connections:
-            self.nextNode.recieveValue(self.val,
-                                       self.connections[self.nextNode])  # push the value through the connection
+        for nextNode in self.connections:
+            nextNode.recieveValue(self.val, self.connections[nextNode])  # push the value through the connection
 
     def evolve(self, evoRate):
-        for self.i in self.connections:
-            self.connections[self.i] = customRand(self.connections[self.i], evoRate)
+        for i in self.connections:
+            self.connections[i] = customRand(self.connections[i], evoRate)
 
 
-class outNode(node):
+class OutNode(Node):
     def __init__(self, activation_func="sigmoid"):
         super().__init__()  # these nodes just hold values, so they are kind of dumb
         self.acivation_func = activation_func
 
 
-class midNode(node):  # pretty much the same as an input node
+class MidNode(Node):  # pretty much the same as an input node
     def __init__(self, activation_func="sigmoid"):
         super().__init__()
         self.connections = {}
@@ -96,19 +95,18 @@ class midNode(node):  # pretty much the same as an input node
         try:
             self.connections.pop(dnode)
         except Exception as e:
-            warnings.warn(str(node) + " not found. Exception: " + str(e))
+            warnings.warn(str(Node) + " not found. Exception: " + str(e))
 
     def activate(self):
-        for self.nextNode in self.connections:
-            self.nextNode.recieveValue(self.val,
-                                       self.connections[self.nextNode])  # push the value through the connection
+        for nextNode in self.connections:
+            nextNode.recieveValue(self.val, self.connections[nextNode])  # push the value through the connection
 
     def evolve(self, evoRate):
-        for self.i in self.connections:
-            self.connections[self.i] = customRand(self.connections[self.i], evoRate)
+        for i in self.connections:
+            self.connections[i] = customRand(self.connections[i], evoRate)
 
 
-class net:  # the network itself, contains many nodes
+class Net:  # the network itself, contains many nodes
     def __init__(self, inputsRaw, outputsRaw, width, depth, bias=True, activation_func="sigmoid",
                  final_activation_func="sigmoid", neat=False, datafile = None, classifier_output=None):
         self.activation_func = activation_func
@@ -121,7 +119,7 @@ class net:  # the network itself, contains many nodes
         self.expectedInputs = inputsRaw
         self.expectedOutputs = outputsRaw
 
-        self.bias = inNode()
+        self.bias = InNode()
 
         self.usebias = bias
         self.neat = neat
@@ -135,58 +133,42 @@ class net:  # the network itself, contains many nodes
 
         self.out = {}
 
-        # neat stuff
-        self.insertlayer = None
-        self.newnode = None
-        self.rawmidnodeslist = None
+        for i in range(0, width):
+            midnodestemp = []
+            for j in range(0, depth):
+                midnodestemp.append(MidNode(activation_func=self.activation_func))
 
-        # json stuff
-        self.json = None
-        self.nodeid = None
-        self.nodeindex = None
-        self.allmids = None
-        self.rowcount = None
-        self.connectionjson = None
-        self.data = None
-        self.connectionid = None
-        self.connectionval = None
-
-        for self.i in range(0, width):
-            self.midnodestemp = []
-            for self.j in range(0, depth):
-                self.midnodestemp.append(midNode(activation_func=self.activation_func))
-
-            self.midnodes.append(self.midnodestemp)
+            self.midnodes.append(midnodestemp)
 
         self.width = width
         self.depth = depth
 
         if width == 0:
-            for self.inName in self.inputs:
-                self.inputNode = self.inputs[self.inName]
-                for self.outName in self.outputs:
-                    self.outputNode = self.outputs[self.outName]
-                    self.inputNode.connect(self.outputNode)
+            for inName in self.inputs:
+                inputNode = self.inputs[inName]
+                for outName in self.outputs:
+                    outputNode = self.outputs[outName]
+                    inputNode.connect(outputNode)
 
         else:
-            for self.inName in self.inputs:
-                self.inputNode = self.inputs[self.inName]
-                for self.midNode in self.midnodes[0]:
-                    self.inputNode.connect(self.midNode)
+            for inName in self.inputs:
+                inputNode = self.inputs[inName]
+                for midNode in self.midnodes[0]:
+                    inputNode.connect(midNode)
 
-            for self.i in range(1, len(self.midnodes)):
-                for self.midnode in self.midnodes[self.i - 1]:
-                    for self.midnode2 in self.midnodes[self.i]:
-                        self.midnode.connect(self.midnode2)
+            for i in range(1, len(self.midnodes)):
+                for midnode in self.midnodes[i - 1]:
+                    for midnode2 in self.midnodes[i]:
+                        midnode.connect(midnode2)
 
-            for self.midnode in self.midnodes[len(self.midnodes) - 1]:
-                for self.outputName in self.outputs:
-                    self.outputNode = self.outputs[self.outputName]
-                    self.midnode.connect(self.outputNode)
+            for midnode in self.midnodes[len(self.midnodes) - 1]:
+                for outputName in self.outputs:
+                    outputNode = self.outputs[outputName]
+                    midnode.connect(outputNode)
 
-        for self.midnodelist in self.midnodes:
-            for self.midnode in self.midnodelist:
-                self.bias.connect(self.midnode)
+        for midnodelist in self.midnodes:
+            for midnode in midnodelist:
+                self.bias.connect(midnode)
 
     def setNode(self, name, val):  # in
         self.inputs[name].val = val
@@ -195,16 +177,16 @@ class net:  # the network itself, contains many nodes
         return self.outputs[name].val
 
     def receiveInput(self, inputs):
-        for self.name in inputs:
-            self.setNode(self.name, scale(self.expectedInputs[self.name]["min"], inputs[self.name],
-                                          self.expectedInputs[self.name]["max"], minx=-1, maxx=1))
+        for name in inputs:
+            self.setNode(name, scale(self.expectedInputs[name]["min"], inputs[name],
+                                     self.expectedInputs[name]["max"], minx=-1, maxx=1))
 
 
     def getOutput(self):
-        self.out = {}
-        for self.name in self.expectedOutputs:
-                self.out[self.name] = self.getNode(self.name)
-        return self.out
+        out = {}
+        for name in self.expectedOutputs:
+                out[name] = self.getNode(name)
+        return out
 
     def scale(self, name, val):
         return scale(self.expectedOutputs[name]["min"], val, self.expectedOutputs[name]["max"])
@@ -213,151 +195,150 @@ class net:  # the network itself, contains many nodes
         if self.usebias:
             self.bias.activate()
 
-        for self.inName in self.inputs:  # activate net
-            self.inputNode = self.inputs[self.inName]
-            self.inputNode.activate()
+        for inName in self.inputs:  # activate net
+            inputNode = self.inputs[inName]
+            inputNode.activate()
 
-        for self.midnodelist in self.midnodes:
-            for self.midnode in self.midnodelist:
-                self.midnode.calc()
-                self.midnode.activate()
+        for midnodelist in self.midnodes:
+            for midnode in midnodelist:
+                midnode.calc()
+                midnode.activate()
 
-        for self.outName in self.outputs:
-            self.outputNode = self.outputs[self.outName]
-            self.outputNode.calc()
+        for outName in self.outputs:
+            outputNode = self.outputs[outName]
+            outputNode.calc()
 
     def reset(self):
         self.bias.val = -1
 
-        for self.name in self.inputs:  # reset all inputs
-            self.inputNode = self.inputs[self.name]
-            self.inputNode.reset()
+        for name in self.inputs:  # reset all inputs
+            inputNode = self.inputs[name]
+            inputNode.reset()
 
-        for self.name in self.outputs:  # reset all outputs
-            self.outputNode = self.outputs[self.name]
-            self.outputNode.reset()
+        for name in self.outputs:  # reset all outputs
+            outputNode = self.outputs[name]
+            outputNode.reset()
 
-        for self.midnodelist in self.midnodes:
-            for self.midnode in self.midnodelist:
-                self.midnode.reset()
+        for midnodelist in self.midnodes:
+            for midnode in midnodelist:
+                midnode.reset()
 
     def evolve(self, evoRate):
         # region NEAT
         if self.neat:  # Nuero Evolution of Augmented Topolgies
             if random.randint(0, 3) == 0:
                 if random.randint(0, 2) != 0:  # mostly add nodes
-                    self.newnode = midNode()
+                    newnode = MidNode()
                     length = len(self.midnodes)
                     if random.randint(0,1): #don't add stuff to the end that much
                         length = max(0,length-1)
-                    self.insertlayer = random.randint(0, length)  # pick one of the lists, or the end
+                    insertlayer = random.randint(0, length)  # pick one of the lists, or the end
 
-                    if self.insertlayer != len(self.midnodes) and random.randint(0,
-                                                                                 2) == 0:  # 67% chance to do an insert instead
-                        self.midnodes.insert(self.insertlayer, [self.newnode])
-                    elif self.insertlayer == len(self.midnodes):
-                        self.midnodes.append([self.newnode])
+                    # 67% chance to do an insert instead
+                    if insertlayer != len(self.midnodes) and random.randint(0, 2) == 0:
+                        self.midnodes.insert(insertlayer, [newnode])
+                    elif insertlayer == len(self.midnodes):
+                        self.midnodes.append([newnode])
                     else:
-                        self.midnodes[self.insertlayer].append(self.newnode)
+                        self.midnodes[insertlayer].append(newnode)
 
                     # ok, time to connect the node
-                    if self.insertlayer == len(self.midnodes) - 1:
-                        for self.inName in self.inputs:
-                            self.inputNode = self.inputs[self.inName]
-                            self.newnode.connect(self.inputNode)  # def to 0, we evolve later anyway
+                    if insertlayer == len(self.midnodes) - 1:
+                        for inName in self.inputs:
+                            inputNode = self.inputs[inName]
+                            newnode.connect(inputNode)  # def to 0, we evolve later anyway
 
                     else:
-                        for self.midnode in self.midnodes[self.insertlayer + 1]:
-                            self.newnode.connect(self.midnode)
+                        for midnode in self.midnodes[insertlayer + 1]:
+                            newnode.connect(midnode)
 
                 else:  # delete midnodes
-                    self.rawmidnodeslist = []
-                    for self.midnodelist in self.midnodes:
-                        for self.midnode in self.midnodelist:
-                            self.rawmidnodeslist.append(self.midnode)
+                    rawmidnodeslist = []
+                    for midnodelist in self.midnodes:
+                        for midnode in midnodelist:
+                            rawmidnodeslist.append(midnode)
 
-                    if len(self.rawmidnodeslist) > 0:
-                        self.newnode = self.rawmidnodeslist.pop(random.randint(0, len(self.rawmidnodeslist) - 1))
+                    if len(rawmidnodeslist) > 0:
+                        newnode = rawmidnodeslist.pop(random.randint(0, len(rawmidnodeslist) - 1))
 
-                        for self.inName in self.inputs:
-                            self.inputNode = self.inputs[self.inName]
-                            if self.newnode in self.inputNode.connections.keys():
-                                self.inputNode.disconnect(self.newnode)
+                        for inName in self.inputs:
+                            inputNode = self.inputs[inName]
+                            if newnode in inputNode.connections.keys():
+                                inputNode.disconnect(newnode)
 
-                        for self.midnode in self.rawmidnodeslist:
-                            if self.newnode in self.midnode.connections.keys():
-                                self.midnode.disconnect(self.newnode)
+                        for midnode in rawmidnodeslist:
+                            if newnode in midnode.connections.keys():
+                                midnode.disconnect(newnode)
         # endregion NEAT
-        for self.inName in self.inputs:
-            self.inputNode = self.inputs[self.inName]
-            self.inputNode.evolve(evoRate)
+        for inName in self.inputs:
+            inputNode = self.inputs[inName]
+            inputNode.evolve(evoRate)
 
-        for self.midnodelist in self.midnodes:
-            for self.midnode in self.midnodelist:
-                self.midnode.evolve(evoRate)
+        for midnodelist in self.midnodes:
+            for midnode in midnodelist:
+                midnode.evolve(evoRate)
 
         if self.usebias:
             self.bias.evolve(evoRate)
         return self
 
     def getJSON(self, name, ver):
-        self.json = {"net_name": name,
-                     "net_ver": str(ver),
-                     "midwidth": self.width,
-                     "nodes": [],
-                     "expectedInputs": self.expectedInputs,
-                     "expectedOutputs": self.expectedOutputs,
-                     "act_func": self.activation_func,
-                     "fin_act_func": self.final_activation_func,
-                     "use-bias": self.usebias,
-                     "use-neat": self.neat,
-                     "data-file": self.datafile,
-                     "classifier-output": self.classifier_output
-                     }
+        outjson = {"net_name": name,
+                   "net_ver": str(ver),
+                   "midwidth": self.width,
+                   "nodes": [],
+                   "expectedInputs": self.expectedInputs,
+                   "expectedOutputs": self.expectedOutputs,
+                   "act_func": self.activation_func,
+                   "fin_act_func": self.final_activation_func,
+                   "use-bias": self.usebias,
+                   "use-neat": self.neat,
+                   "data-file": self.datafile,
+                   "classifier-output": self.classifier_output}
 
-        self.nodeid = 0
-        self.nodeindex = {}
-        for self.name in self.inputs:
-            self.nodeindex[self.inputs[self.name]] = {"layer": "input", "name": self.name, "id": self.nodeid}
-            self.nodeid += 1
+        nodeid = 0
+        nodeindex = {}
+        for name in self.inputs:
+            nodeindex[self.inputs[name]] = {"layer": "input", "name": name, "id": nodeid}
+            nodeid += 1
 
-        self.allmids = []
-        self.rowcount = 0
-        for self.row in self.midnodes:
-            for self.midnode in self.row:
-                self.allmids.append(self.midnode)
-                self.nodeindex[self.midnode] = {"layer": self.rowcount, "id": self.nodeid}
-                self.nodeid += 1
-            self.rowcount += 1
+        allmids = []
+        rowcount = 0
+        for row in self.midnodes:
+            for midnode in row:
+                allmids.append(midnode)
+                nodeindex[midnode] = {"layer": rowcount, "id": nodeid}
+                nodeid += 1
+            rowcount += 1
 
-        for self.name in self.outputs:
-            self.nodeindex[self.outputs[self.name]] = {"layer": "output", "name": self.name, "id": self.nodeid}
-            self.nodeid += 1
+        for name in self.outputs:
+            nodeindex[self.outputs[name]] = {"layer": "output", "name": name, "id": nodeid}
+            nodeid += 1
 
-        self.nodeindex[self.bias] = {"layer": "bias", "id": self.nodeid}
+        nodeindex[self.bias] = {"layer": "bias", "id": nodeid}
 
-        for self.node in self.nodeindex:
-            if self.nodeindex[self.node]["layer"] != "output":
+        for node in nodeindex:
+            if nodeindex[node]["layer"] != "output":
 
-                self.connectionjson = {}
-                for self.connection in self.node.connections:
-                    self.connectionid = self.nodeindex[self.connection]["id"]
-                    self.connectionval = self.node.connections[self.connection]
-                    self.connectionjson[self.connectionid] = self.connectionval
+                connectionjson = {}
+                for connection in node.connections:
+                    connectionid = nodeindex[connection]["id"]
+                    connectionval = node.connections[connection]
+                    connectionjson[connectionid] = connectionval
 
-                self.nodeindex[self.node]["connections"] = self.connectionjson
+                nodeindex[node]["connections"] = connectionjson
 
-            self.json["nodes"].append(self.nodeindex[self.node])
+            outjson["nodes"].append(nodeindex[node])
 
-        return self.json
+        return outjson
 
     def save(self, fname, name, ver, log=True):
         if log:
             print("Saving net: " + name + " with version: " + str(ver) + " to file: " + fname)
-        self.data = self.getJSON(name, str(ver))
+        data = self.getJSON(name, str(ver))
 
         with open((fname + '.json'), 'w') as fp:
-            json.dump(self.data, fp, sort_keys=True, indent=4)
+            json.dump(data, fp, sort_keys=True, indent=4)
 
 
 def customRand(cVal, evoRate):
@@ -385,7 +366,7 @@ def Random(inputs, outputs, length, width, depth, bias=True, activation_func="re
         print("Creating a set of " + str(length) + " random nets")
     netDB = []
     for i in range(0, length):
-        newNet = net(inputs, outputs, width, depth, bias=bias, activation_func=activation_func,
+        newNet = Net(inputs, outputs, width, depth, bias=bias, activation_func=activation_func,
                      final_activation_func=final_activation_func, neat=neat)
         newNet.evolve(5)
         netDB.append([newNet, 0])
@@ -403,7 +384,7 @@ def loadNet(fname, log=True):
 
     except Exception as e:
         warnings.warn("Error loading file: " + str(e))
-        return net({}, {}, 0, 0)
+        return Net({}, {}, 0, 0)
 
 
 def loadNetJSON(data):
@@ -415,7 +396,7 @@ def loadNetJSON(data):
     for i in range(0, int(data["midwidth"])):
         newmids.append([])
 
-    newnet = net({}, {}, 0, 0)
+    newnet = Net({}, {}, 0, 0)
     newnet.activation_func = data["act_func"]
     newnet.final_activation_func = data["fin_act_func"]
     newnet.usebias = data["use-bias"]
@@ -424,22 +405,22 @@ def loadNetJSON(data):
     newnet.classifier_output = data["classifier-output"]
     for nodedata in data["nodes"]:
         if nodedata["layer"] == "input":
-            newnode = inNode()
+            newnode = InNode()
             nodeindex[nodedata["id"]] = newnode
             newinputs[nodedata["name"]] = newnode
 
         elif nodedata["layer"] == "output":
-            newnode = outNode(activation_func=newnet.final_activation_func)
+            newnode = OutNode(activation_func=newnet.final_activation_func)
             nodeindex[nodedata["id"]] = newnode
             newoutputs[nodedata["name"]] = newnode
 
         elif nodedata["layer"] == "bias":
-            newnode = inNode()
+            newnode = InNode()
             nodeindex[nodedata["id"]] = newnode
             newnet.bias = newnode
 
         else:
-            newnode = midNode(activation_func=newnet.activation_func)
+            newnode = MidNode(activation_func=newnet.activation_func)
             nodeindex[nodedata["id"]] = newnode
             newmids[int(nodedata["layer"])].append(newnode)
 
@@ -451,9 +432,9 @@ def loadNetJSON(data):
 
     for nodedata in data["nodes"]:
         if nodedata["layer"] != "output":
-            Node = nodeindex[nodedata["id"]]
+            node = nodeindex[nodedata["id"]]
             for connectionnum in nodedata["connections"]:
-                Node.connections[nodeindex[int(connectionnum)]] = nodedata["connections"][connectionnum]
+                node.connections[nodeindex[int(connectionnum)]] = nodedata["connections"][connectionnum]
 
     return newnet
 
@@ -465,8 +446,8 @@ def saveNets(netDB, fname, name, ver, log=True):
     data = {"name": name,
             "ver": str(ver),
             "nets": []}
-    for Net in netDB:
-        data["nets"].append(Net.getJSON(i, str(ver)))
+    for net in netDB:
+        data["nets"].append(net.getJSON(i, str(ver)))
         i += 1
 
     with open((fname + '.json'), 'w') as fp:
@@ -481,6 +462,6 @@ def loadNets(fname, log=False):
         print("Found file with name: " + data["name"] + " and ver: " + data["ver"])
 
     netDB = []
-    for Net in data["nets"]:
-        netDB.append([loadNetJSON(Net), 0])
+    for net in data["nets"]:
+        netDB.append([loadNetJSON(net), 0])
     return netDB
